@@ -6317,6 +6317,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		if (drawable != null) {
 			drawable.update();
 			((DrawInline) drawable).toForeground(0, 0);
+			app.getEventDispatcher().lockTextElement(drawable.getGeoElement());
 		}
 
 		return true;
@@ -7596,7 +7597,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 					dontClearSelection = true;
 					hideDynamicStylebar();
 					for (GeoElement geo : selection.getSelectedGeos()) {
-						if (!geo.isGeoPoint()) {
+						if (!geo.isGeoPoint() && !isLockedForMultiuser(geo)) {
 							((PointRotateable) geo).rotate(angle,
 									rotationCenter);
 							geo.updateRepaint();
@@ -7927,6 +7928,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		for (Drawable dr : view.getAllDrawableList()) {
 			if (dr instanceof DrawInline) {
 				((DrawInline) dr).toBackground();
+				app.getEventDispatcher().unlockTextElement(dr.getGeoElement());
 			}
 		}
 	}
@@ -8101,6 +8103,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		if (view.getHitHandler() != EuclidianBoundingBoxHandler.UNDEFINED) {
 			Drawable d = view.getBoundingBoxHandlerHit(mouseLoc, e.getType());
 			if (d != null) {
+				if (isLockedForMultiuser(d.getGeoElement())) {
+					return;
+				}
 				setBoundingBoxCursor();
 				setResizedShape(d);
 			} else if (isMultiSelection() && wasBoundingBoxHit) {
@@ -8225,8 +8230,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			}
 		}
 
-		if ((geo != null) && ((!geo.isLocked() || geo.hasGroup()) || isMoveButtonExpected(geo)
-				|| isMoveTextFieldExpected(geo))) {
+		if (isMovePossible(geo)) {
 			moveModeSelectionHandled = true;
 		} else if (!wasBoundingBoxHit) {
 			// no geo clicked at
@@ -8238,6 +8242,11 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		handleMovedElement(geo, selGeos.size() > 1, e.getType());
 
 		view.repaintView();
+	}
+
+	private boolean isMovePossible(GeoElement geo) {
+		return (geo != null) && ((!geo.isLocked() || geo.hasGroup()) || isMoveButtonExpected(geo)
+				|| isMoveTextFieldExpected(geo)) && !isLockedForMultiuser(geo);
 	}
 
 	/**
@@ -9856,7 +9865,11 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		DrawInline drawInline = (DrawInline) drawable;
 		if (topHit == lastMowHit
 				&& view.getHitHandler() == EuclidianBoundingBoxHandler.UNDEFINED) {
+			if (isLockedForMultiuser(drawable.getGeoElement())) {
+				return;
+			}
 			drawInline.toForeground(mouseLoc.x, mouseLoc.y);
+			app.getEventDispatcher().lockTextElement(drawable.getGeoElement());
 
 			// Fix weird multiselect bug.
 			setResizedShape(null);
@@ -12292,7 +12305,7 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			if (!(geo instanceof PointRotateable)) {
 				hasRotationHandler = false;
 			}
-			if (geo.isLocked()) {
+			if (geo.isLocked() || isLockedForMultiuser(geo)) {
 				fixed = true;
 			}
 		}
@@ -12368,5 +12381,9 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		clearSelections(false, false);
 		selection.addSelectedGeoWithGroup(geoElement);
 		updateBoundingBoxFromSelection(false);
+	}
+
+	private boolean isLockedForMultiuser(GeoElement geo) {
+		return geo instanceof GeoInline && ((GeoInline) geo).isLockedForMultiuser();
 	}
 }
