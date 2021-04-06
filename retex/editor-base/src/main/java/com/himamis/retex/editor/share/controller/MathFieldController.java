@@ -119,8 +119,9 @@ public class MathFieldController {
 			final MathSequence currentField, final int currentOffset,
 			final MathComponent selectionStart, MathComponent selectionEnd) {
 		TeXFormula texFormula = new TeXFormula();
+		boolean textMode = mathField.getInternal().getInputController().getPlainTextMode();
 		texFormula.root = texBuilder.build(mathFormula.getRootComponent(),
-				currentField);
+				currentField, textMode);
 
 		try {
 			final TeXIcon renderer = texFormula.new TeXIconBuilder()
