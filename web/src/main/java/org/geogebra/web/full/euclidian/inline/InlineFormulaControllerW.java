@@ -89,6 +89,10 @@ public class InlineFormulaControllerW implements InlineFormulaController {
 		style.setProperty("transform", "rotate(" + angle + "rad)");
 	}
 
+	public void setScale(double sx, double sy) {
+		style.setProperty("transform", "scale(" + sx + "," + sy + ")");
+	}
+
 	@Override
 	public void toForeground(int x, int y) {
 		if (formula.getContent() != null) {
