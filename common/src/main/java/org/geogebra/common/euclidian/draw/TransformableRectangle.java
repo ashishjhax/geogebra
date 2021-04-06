@@ -71,6 +71,14 @@ public class TransformableRectangle {
 		corner3 = directTransform.transform(new GPoint2D(0, height), null);
 	}
 
+	public double realWidth() {
+		return corner0.distance(corner1);
+	}
+
+	public double realHeight() {
+		return corner0.distance(corner3);
+	}
+
 	/**
 	 * @return height (in screen coords)
 	 */

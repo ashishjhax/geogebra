@@ -14,8 +14,8 @@ public abstract class GeoInline extends GeoElement implements Translateable, Poi
 
 	private GPoint2D location;
 
-	private double width;
-	private double height;
+	protected double width;
+	protected double height;
 
 	private double angle;
 
