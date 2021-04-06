@@ -34,6 +34,7 @@ public class DrawInlineTable extends Drawable implements DrawInline {
 
 	@Override
 	public void update() {
+		table.zoomIfNeeded();
 		rectangle.updateSelfAndBoundingBox();
 		if (tableController == null && table.getLocation() != null) {
 			// make sure we don't initialize the controller during paste XML parsing

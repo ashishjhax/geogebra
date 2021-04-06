@@ -19,12 +19,6 @@ public class GeoFormula extends GeoInline {
 	private static final Parser parser = new Parser(new MetaModel());
 	private static final TeXSerializer texSerializer = new TeXSerializer();
 
-	public double contentWidth = DEFAULT_WIDTH;
-	public double contentHeight = DEFAULT_HEIGHT;
-
-	private double xScale;
-	private double yScale;
-
 	private boolean defined = true;
 	private String formula;
 
@@ -43,50 +37,8 @@ public class GeoFormula extends GeoInline {
 		super(c);
 		setLocation(location);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-	}
-
-
-	/**
-	 * Zooming in x direction
-	 *
-	 * @param factor
-	 *            zoom factor;
-	 *
-	 */
-	private void zoomX(double factor) {
-		width *= factor;
-	}
-
-	/**
-	 * Zooming in y direction
-	 *
-	 * @param factor
-	 *            zoom factor;
-	 *
-	 */
-	private void zoomY(double factor) {
-		height *= factor;
-	}
-
-	/**
-	 * Zoom the video if the video is not pinned, and the scales of the view
-	 * changed.
-	 */
-	public void zoomIfNeeded() {
-		if (xScale == 0) {
-			xScale = app.getActiveEuclidianView().getXscale();
-			yScale = app.getActiveEuclidianView().getYscale();
-			return;
-		}
-
-		if (xScale != app.getActiveEuclidianView().getXscale()) {
-			zoomX(app.getActiveEuclidianView().getXscale() / xScale);
-			xScale = app.getActiveEuclidianView().getXscale();
-		}
-		if (yScale != app.getActiveEuclidianView().getYscale()) {
-			zoomY(app.getActiveEuclidianView().getYscale() / yScale);
-			yScale = app.getActiveEuclidianView().getYscale();
-		}
+		contentWidth = DEFAULT_WIDTH;
+		contentHeight = DEFAULT_HEIGHT;
 	}
 
 	@Override

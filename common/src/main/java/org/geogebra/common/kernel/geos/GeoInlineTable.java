@@ -34,6 +34,8 @@ public class GeoInlineTable extends GeoInline implements TextStyle, HasTextForma
 		super(c);
 		setLocation(location);
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+		contentWidth = DEFAULT_WIDTH;
+		contentHeight = DEFAULT_HEIGHT;
 	}
 
 	@Override
