@@ -43,15 +43,14 @@
  */
 package com.himamis.retex.renderer.web.graphics;
 
-import com.google.gwt.canvas.dom.client.CssColor;
 import com.himamis.retex.renderer.share.platform.graphics.Color;
 
 public class ColorW implements Color {
 
-	private CssColor cssColor;
+	private String cssColor;
 
 	public ColorW(int r, int g, int b) {
-		cssColor = CssColor.make(r, g, b);
+		cssColor = "rgb(" + r + "," + g + "," + b + ")";
 	}
 
 	public ColorW(int r, int g, int b, int a) {
@@ -59,19 +58,11 @@ public class ColorW implements Color {
 	}
 
 	public ColorW(String cssColorString) {
-		cssColor = CssColor.make(cssColorString);
+		cssColor = cssColorString;
 	}
 
-	public ColorW(CssColor cssColor) {
-		this.cssColor = cssColor;
-	}
-
-	public CssColor getCssColor() {
+	public String getCssColor() {
 		return cssColor;
-	}
-
-	public void setColor(String cssColorString) {
-		cssColor = CssColor.make(cssColorString);
 	}
 
 }
