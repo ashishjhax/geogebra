@@ -1,6 +1,7 @@
 package org.geogebra.web.full.main.embed;
 
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.common.main.undo.UndoInfoStoredListener;
 import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.EventType;
@@ -87,6 +88,33 @@ public class CalcEmbedElement extends EmbedElement {
 
 	public void sendCommand(String cmd) {
 		frame.getApp().getGgbApi().asyncEvalCommand(cmd, null, null);
+	}
+
+	/**
+	 * Set the specified axis to positive only with the given crossing
+	 * @param axis axis id (0 - x, 1 - y)
+	 * @param crossing the value at which the given axis crosses the other
+	 */
+	public void setGraphAxis(int axis, double crossing) {
+		EuclidianSettings evs = frame.getApp().getSettings().getEuclidian(1);
+		evs.beginBatch();
+		evs.setPositiveAxis(axis, true);
+		evs.setAxisCross(axis, crossing);
+		evs.endBatch();
+		frame.getApp().getKernel().notifyRepaint();
+	}
+
+	/**
+	 * set grid type for EV
+	 * @param grid grid type
+	 */
+	public void setGrid(int grid) {
+		EuclidianSettings evs = frame.getApp().getSettings().getEuclidian(1);
+		evs.beginBatch();
+		evs.showGrid(true);
+		evs.setGridType(grid);
+		evs.endBatch();
+		frame.getApp().getKernel().notifyRepaint();
 	}
 
 	private static class UndoRedoGlue implements UndoInfoStoredListener {

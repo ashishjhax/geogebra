@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.euclidian.DrawableND;
@@ -624,11 +625,24 @@ public class EmbedManagerW implements EmbedManager, EventRenderable, ActionExecu
 
 	@Override
 	public void sendCommand(GeoEmbed chart, String cmd) {
+		doIfCalcEmbed(chart, element -> element.sendCommand(cmd));
+	}
+
+	@Override
+	public void setGraphAxis(GeoEmbed chart, int axis, double crossing) {
+		doIfCalcEmbed(chart, element -> element.setGraphAxis(axis, crossing));
+	}
+
+	@Override
+	public void setGrid(GeoEmbed chart, int grid) {
+		doIfCalcEmbed(chart, element -> element.setGrid(grid));
+	}
+
+	private void doIfCalcEmbed(GeoEmbed chart, Consumer<CalcEmbedElement> consumer) {
 		DrawableND drawChart = app.getActiveEuclidianView().getDrawableFor(chart);
 		EmbedElement el = widgets.get(drawChart);
 		if (el instanceof CalcEmbedElement) {
-			((CalcEmbedElement) el).sendCommand(cmd);
+			consumer.accept((CalcEmbedElement) el);
 		}
 	}
-
 }

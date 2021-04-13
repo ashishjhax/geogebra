@@ -1,8 +1,10 @@
 package org.geogebra.common.kernel.statistics;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.geogebra.common.euclidian.EmbedManager;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.GetCommand;
@@ -19,7 +21,7 @@ public class AlgoTableToChart extends AlgoElement {
 	public enum ChartType {
 		PieChart,
 		BarChart,
-		LineChart
+		LineGraph
 	}
 
 	public static final int CHART_SIZE = 360;
@@ -82,11 +84,14 @@ public class AlgoTableToChart extends AlgoElement {
 				embedManager.sendCommand(chart, "ShowAxes(false)");
 				embedManager.sendCommand(chart, "ZoomIn(-4, -4, 4, 4)");
 				break;
-			case LineChart:
-				// todo
+			case LineGraph:
+				embedManager.sendCommand(chart, "ShowAxes(true)");
+				embedManager.setGrid(chart, EuclidianView.GRID_CARTESIAN);
 				break;
 			case BarChart:
-				// todo
+				embedManager.sendCommand(chart, "ShowAxes(true)");
+				break;
+			default:
 				break;
 			}
 		});
@@ -98,27 +103,78 @@ public class AlgoTableToChart extends AlgoElement {
 			return;
 		}
 
-		List<Double> data = table.extractData(column);
+		cons.getApplication().invokeLater(() -> {
+			String chartCommand;
+			double minX = 0, minY = 0, maxX = 0, maxY = 0;
 
-		String chartCommand;
+			switch (chartType) {
+			case PieChart:
+				List<Double> pieData = table.extractData(column);
+				chartCommand = "chart=PieChart({" + StringUtil.join(",", pieData) + "})";
+				break;
+			case LineGraph:
+				List<Double>[] lineData = table.extractTwoColumnData(column);
+				chartCommand = "chart=LineGraph({"
+						+ StringUtil.join(",", lineData[0]) + "},{"
+						+ StringUtil.join(",", lineData[1]) + "})";
+				minX = Collections.min(lineData[0]) - 1;
+				maxX = Collections.max(lineData[0]) + 1;
+				minY = Collections.min(lineData[1]) - 1;
+				maxY = Collections.max(lineData[1]) + 1;
+				break;
+			default:
+			case BarChart:
+				List<Double>[] barData = table.extractTwoColumnData(column);
+				chartCommand = "chart=BarChart({"
+						+ StringUtil.join(",", barData[0]) + "},{"
+						+ StringUtil.join(",", barData[1]) + "}, 1)";
+				minX = Collections.min(barData[0]) - 1.5;
+				maxX = Collections.max(barData[0]) + 1.5;
+				maxY = Collections.max(barData[1]) + 1;
+				break;
+			}
 
-		switch (chartType) {
-		case PieChart:
-			chartCommand = "chart=PieChart({" + StringUtil.join(",", data) + "})";
-			break;
-		case LineChart:
-			chartCommand = "chart=LineChart({" + StringUtil.join(",", data) + "},1)";
-			break;
-		default:
-		case BarChart:
-			chartCommand = "chart=BarChart({" + StringUtil.join(",", data) + "},1)";
-			break;
-		}
+			if (chartCommand.equals(oldChartCommand)) {
+				return;
+			}
 
-		if (!chartCommand.equals(oldChartCommand)) {
 			embedManager.sendCommand(chart, chartCommand);
 			oldChartCommand = chartCommand;
-		}
+
+			if (chartType == ChartType.BarChart || chartType == ChartType.LineGraph) {
+				int axisDistance = 32; // padding between the axis and the edge of the object
+				String newMinX = "(" + axisDistance + " * " + maxX + " - x(Corner(5)) * "
+						+ minX + ") / (" + axisDistance + " - x(Corner(5)))";
+				String newMinY = "(" + axisDistance + " * " + maxY + " - y(Corner(5)) * "
+						+ minY + ") / (" + axisDistance + " - y(Corner(5)))";
+
+				embedManager.sendCommand(chart, "ShowLabel(chart, false)");
+				embedManager.sendCommand(chart, "ZoomIn(" + newMinX + ", " + newMinY
+						+ ", " + maxX + ", " + maxY + ")");
+				embedManager.setGraphAxis(chart, 0, minY);
+				embedManager.setGraphAxis(chart, 1, minX);
+			}
+
+			switch (chartType) {
+			case BarChart:
+				if (kernel.getApplication().isMebis()) {
+					embedManager.sendCommand(chart, "SetColor(chart, \"#B500A8D5\")");
+				} else {
+					embedManager.sendCommand(chart, "SetColor(chart, \"#B56557D2\")");
+				}
+				break;
+			case LineGraph:
+				if (kernel.getApplication().isMebis()) {
+					embedManager.sendCommand(chart, "SetColor(chart, \"#00A8D5\")");
+				} else {
+					embedManager.sendCommand(chart, "SetColor(chart, \"#6557D2\")");
+				}
+				embedManager.sendCommand(chart, "SetLineThickness(chart, 8)");
+				break;
+			default:
+				break;
+			}
+		});
 	}
 
 	@Override
