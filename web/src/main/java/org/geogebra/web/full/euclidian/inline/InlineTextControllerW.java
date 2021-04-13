@@ -105,7 +105,9 @@ public class InlineTextControllerW implements InlineTextController {
 
 			@Override
 			public void onInput() {
-				int actualMinHeight = editor.getMinHeight() + 2 * DrawInlineText.PADDING;
+				int actualMinHeight =
+						(int) ((editor.getMinHeight() + 2 * DrawInlineText.PADDING) * geo.getWidth()
+								/ geo.getContentWidth());
 				if (geo.getMinHeight() != actualMinHeight) {
 					geo.setSize(geo.getWidth(), Math.max(actualMinHeight, geo.getHeight()));
 					geo.setMinHeight(actualMinHeight);
@@ -274,6 +276,12 @@ public class InlineTextControllerW implements InlineTextController {
 	@Override
 	public String getListStyle() {
 		return editor.getListStyle();
+	}
+
+	@Override
+	public void setScale(double sx, double sy) {
+		style.setProperty("transform", "scale(" + sx + "," + sy + ")");
+		editor.setExternalScale(sx);
 	}
 
 }
