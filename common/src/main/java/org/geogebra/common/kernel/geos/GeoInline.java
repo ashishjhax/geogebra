@@ -241,4 +241,12 @@ public abstract class GeoInline extends GeoElement implements Translateable, Poi
 	public void setHeight(double height) {
 		this.height = height;
 	}
+
+	public boolean isLockedForMultiuser() {
+		return isLockedForMultiuser;
+	}
+
+	public void setLockedForMultiuser(boolean locked) {
+		isLockedForMultiuser = locked;
+	}
 }
