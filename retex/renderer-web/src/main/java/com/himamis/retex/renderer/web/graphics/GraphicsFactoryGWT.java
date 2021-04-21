@@ -53,6 +53,7 @@ import com.himamis.retex.renderer.share.platform.graphics.stubs.AffineTransform;
 
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLCanvasElement;
+import elemental2.dom.HTMLImageElement;
 import jsinterop.base.Js;
 
 public class GraphicsFactoryGWT extends GraphicsFactory {
@@ -72,6 +73,12 @@ public class GraphicsFactoryGWT extends GraphicsFactory {
 	public Image createImage(int width, int height, int type) {
 		HTMLCanvasElement canvas = Js.uncheckedCast(DomGlobal.document.createElement("canvas"));
 		return new ImageW(canvas, width, height, type);
+	}
+
+	public Image createImage(String base64, int width, int height) {
+		HTMLImageElement img = (HTMLImageElement) DomGlobal.document.createElement("img");
+		img.src = base64;
+		return new ImageWImg(img, width, height);
 	}
 
 	@Override
