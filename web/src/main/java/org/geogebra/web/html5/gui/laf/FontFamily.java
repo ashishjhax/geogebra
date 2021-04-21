@@ -20,7 +20,8 @@ public enum FontFamily {
 	TIMES("Times", "Times, serif"),
 	TITILLIUM("Titillium Web", "TitilliumWeb, sans-serif"),
 	TREBUCHET("Trebuchet", "Trebuchet MS, sans-serif"),
-	VERDANA("Verdana", "Verdana, sans-serif");
+	VERDANA("Verdana", "Verdana, sans-serif"),
+	VADEMO("Vademo", "vademo-regular, sans-serif");
 
 	private String displayName;
 	private String cssName;

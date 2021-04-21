@@ -13,7 +13,7 @@ import jsinterop.annotations.JsFunction;
 public final class FontLoader {
 	private static Map<String, FontState> injected = new HashMap<>();
 	private static FontFamily[] bundled = new FontFamily[]{FontFamily.DYSLEXIC,
-			FontFamily.QUICKSAND, FontFamily.SOURCE_SANS_PRO, FontFamily.TITILLIUM};
+			FontFamily.QUICKSAND, FontFamily.SOURCE_SANS_PRO, FontFamily.TITILLIUM, FontFamily.VADEMO};
 
 	private enum FontState { LOADING, ACTIVE }
 
@@ -43,18 +43,15 @@ public final class FontLoader {
 		if (!injected.containsKey(familyName)) {
 			String fileName = GWT.getModuleBaseURL() + "webfont/" + familyName;
 			String css = "@font-face {  font-family: \"" + familyName + "\";"
-					+ "src: url(\"" + fileName + ".woff2\") format(\"woff2\");"
-					+ "font-weight: normal; font-style: normal;}";
+					+ "src: url(\"" + fileName + ".woff\") format(\"woff\");"
+					+ "font-weight: normal; font-style: normal; font-feature-settings: \"liga\"}";
 			StyleInjector.inject(css, true);
 			injected.put(familyName, FontState.LOADING);
 		}
 		if (injected.get(familyName) != FontState.ACTIVE) {
-			loadWebFont(familyName, new FontLoadCallback() {
-				@Override
-				public void fontLoadeded(String activeFontName, String variation) {
-					injected.put(activeFontName, FontState.ACTIVE);
-					callback.run();
-				}
+			loadWebFont(familyName, (activeFontName, variation) -> {
+				injected.put(activeFontName, FontState.ACTIVE);
+				callback.run();
 			});
 		}
 	}
