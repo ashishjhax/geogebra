@@ -169,6 +169,7 @@ public class InlineTextControllerW implements InlineTextController {
 		if (!editor.getWidget().getElement().hasClassName(INVISIBLE)) {
 			editor.getWidget().addStyleName(INVISIBLE);
 			geo.updateRepaint();
+			geo.unlockForMultiuser();
 		}
 	}
 

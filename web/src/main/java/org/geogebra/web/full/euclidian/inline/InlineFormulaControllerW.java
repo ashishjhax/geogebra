@@ -115,6 +115,7 @@ public class InlineFormulaControllerW implements InlineFormulaController {
 		if (widget.isVisible()) {
 			formula.updateRepaint();
 			widget.setVisible(false);
+			formula.unlockForMultiuser();
 		}
 		mathFieldEditor.setKeyboardVisibility(false);
 	}
