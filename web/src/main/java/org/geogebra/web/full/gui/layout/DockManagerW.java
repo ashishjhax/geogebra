@@ -238,7 +238,7 @@ public class DockManagerW extends DockManager {
 				 * Get the parent split pane of this dock panel and ignore the
 				 * last direction as its reserved for the position of the dock
 				 * panel itself.
-				 * 
+				 *
 				 */
 				for (int j = 0; j < directions.length - 1; ++j) {
 					Widget current;
@@ -862,6 +862,7 @@ public class DockManagerW extends DockManager {
 
 		// the component opposite to the current component
 		int[] oppositeDim = new int[] { 0, 0 };
+
 		Widget opposite = prepareRootPaneForInsert(oppositeDim, currentPane,
 					newSplitPane, lastPos, secondLastPos);
 		// save divider locations to prevent not visible views
