@@ -205,7 +205,7 @@ public class InlineFormattingItems {
 		Consumer<AlgoTableToChart.ChartType> chartCreator = (chartType) -> {
 			int column = ((InlineTableController) inlines.get(0)).getSelectedColumn();
 			AlgoTableToChart algoTableToChart =
-					new AlgoTableToChart(table.getConstruction(), table, chartType, column);
+					new AlgoTableToChart(table.getConstruction(), table, chartType, column, true);
 			GeoElement chart = algoTableToChart.getOutput(0);
 			chart.setLabel(null);
 			app.getUndoManager().storeUndoInfo();
