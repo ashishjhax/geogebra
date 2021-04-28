@@ -671,7 +671,7 @@ public final class EuclidianConstants {
 			return "CopyVisualStyle";
 
 		case EuclidianConstants.MODE_DELETE:
-			return "Delete";
+			return "Erase";
 
 		case EuclidianConstants.MODE_VECTOR:
 			return "Vector.Tool";
