@@ -1439,17 +1439,6 @@ public class GeoSymbolicTest extends BaseSymbolicTest {
 	}
 
 	@Test
-	public void testRounding() {
-		kernel.setPrintFigures(20);
-		GeoSymbolic number = add("11.3 * 1.5");
-		AlgebraItem.toggleSymbolic(number);
-		String output = AlgebraItem.getOutputTextForGeoElement(number);
-		assertThat(output, equalTo("16.95"));
-		// Reset
-		kernel.setPrintDecimals(5);
-	}
-
-	@Test
 	public void testNestedFunction() {
 		app.setUndoActive(true);
 
