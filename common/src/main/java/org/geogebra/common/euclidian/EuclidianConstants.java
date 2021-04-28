@@ -480,6 +480,10 @@ public final class EuclidianConstants {
 	 */
 	public static final int MAX_PEN_HIGHLIGHTER_SIZE = 30;
 
+	public static String getModeIconName(int mode) {
+		return mode == EuclidianConstants.MODE_DELETE ? "erase" : getModeTextSimple(mode);
+	}
+
 	/**
 	 * @param mode
 	 *            mode ID
@@ -671,7 +675,7 @@ public final class EuclidianConstants {
 			return "CopyVisualStyle";
 
 		case EuclidianConstants.MODE_DELETE:
-			return "Erase";
+			return "Delete";
 
 		case EuclidianConstants.MODE_VECTOR:
 			return "Vector.Tool";
