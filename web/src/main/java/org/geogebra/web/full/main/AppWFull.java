@@ -98,7 +98,6 @@ import org.geogebra.web.full.gui.menu.MenuViewController;
 import org.geogebra.web.full.gui.menu.MenuViewListener;
 import org.geogebra.web.full.gui.menubar.FileMenuW;
 import org.geogebra.web.full.gui.menubar.PerspectivesPopup;
-import org.geogebra.web.full.gui.openfileview.OpenFileView;
 import org.geogebra.web.full.gui.properties.PropertiesViewW;
 import org.geogebra.web.full.gui.toolbar.mow.NotesLayout;
 import org.geogebra.web.full.gui.toolbarpanel.ToolbarPanel;
@@ -223,6 +222,7 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	private final HashMap<String, UndoHistory> undoHistory = new HashMap<>();
 	private InputBoxType inputBoxType;
 	private String functionVars = "";
+	private OpenSearch search;
 
 	/**
 	 * @param geoGebraElement GeoGebra element
@@ -736,31 +736,20 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 
 	@Override
 	public final void openSearch(String query) {
-		hideMenu();
-		if (isWhiteboardActive()
-				&& !getLoginOperation().isLoggedIn()) {
-			activity.markSearchOpen();
-			getGuiManager().listenToLogin();
-			getLoginOperation().showLoginDialog();
-			getGuiManager().setRunAfterLogin(() -> {
-				((OpenFileView) getGuiManager()
-						.getBrowseView()).updateMaterials();
-				showBrowser((MyHeaderPanel) getGuiManager().getBrowseView(query));
-			});
-			return;
+		if (search == null) {
+			search = new OpenSearch(this);
 		}
-		if (isWhiteboardActive()
-				&& getGuiManager().browseGUIwasLoaded()
-				&& StringUtil.emptyTrim(query)
-				&& getGuiManager().getBrowseView() instanceof OpenFileView) {
-			((OpenFileView) getGuiManager().getBrowseView())
-					.updateMaterials();
+		search.show(query);
+	}
+
+	/**
+	 * Open temporary saved files view in exam mode.
+	 */
+	public final void openSearchInExamMode() {
+		if (search == null) {
+			search = new OpenSearch(this);
 		}
-		showBrowser((MyHeaderPanel) getGuiManager().getBrowseView(query));
-		if (getAppletParameters().getDataParamPerspective()
-				.startsWith("search:")) {
-			getAppletParameters().setAttribute("perspective", "");
-		}
+		search.openInExamMode();
 	}
 
 	@Override
@@ -2159,17 +2148,21 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	@Override
 	public void startExam() {
 		super.startExam();
-
+		getExam().getTempStorage().clearTempMaterials();
+		getExam().getTempStorage().newMaterial();
 		// ensure fullscreen: we may have lost it when handling unsaved
 		// changes
 		getLAF().toggleFullscreen(true);
-		if (guiManager != null && menuViewController != null) {
-			guiManager.setUnbundledHeaderStyle("examOk");
-			menuViewController.setExamMenu();
-			guiManager.resetMenu();
-			GlobalHeader.INSTANCE.addExamTimer();
-			new ExamUtil(this).visibilityEventMain();
-			guiManager.initInfoBtnAction();
+		if (guiManager != null) {
+			guiManager.resetBrowserGUI();
+			if (menuViewController != null) {
+				guiManager.setUnbundledHeaderStyle("examOk");
+				menuViewController.setExamMenu();
+				guiManager.resetMenu();
+				GlobalHeader.INSTANCE.addExamTimer();
+				new ExamUtil(this).visibilityEventMain();
+				guiManager.initInfoBtnAction();
+			}
 		}
 	}
 
@@ -2188,6 +2181,7 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 			menuViewController.setDefaultMenu();
 		}
 		guiManager.resetMenu();
+		guiManager.resetBrowserGUI();
 		setActivePerspective(0);
 	}
 
@@ -2259,6 +2253,9 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 		updatePerspective(perspective);
 		clearConstruction();
 		restoreMaterial(subAppCode);
+		if (isExam()) {
+			getExam().getTempStorage().newMaterial();
+		}
 	}
 
 	private void storeCurrentMaterial() {
@@ -2324,7 +2321,7 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	public void setSuiteHeaderButton(String subappCode) {
 		if (suiteAppPickerButton != null) {
 			suiteAppPickerButton.setIconAndLabel(subappCode);
-			suiteAppPickerButton.checkButtonVisibility();
+			GlobalHeader.onResize();
 		}
 	}
 

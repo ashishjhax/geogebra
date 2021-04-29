@@ -1444,7 +1444,8 @@ public class GuiManagerW extends GuiManager
 
 	@Override
 	public void updateFrameSize() {
-		if (!getApp().getAppletParameters().getDataParamApp()) {
+		if (!getApp().getAppletParameters().getDataParamApp()
+			|| getApp().isExam()) {
 			return;
 		}
 		// get frame size from layout manager
@@ -2340,5 +2341,13 @@ public class GuiManagerW extends GuiManager
 	public MathKeyboardListener getKeyboardListener() {
 		DockPanelW dockPanelForKeyboard = layout.getDockManager().getPanelForKeyboard();
 		return getKeyboardListener(dockPanelForKeyboard);
+	}
+
+	/**
+	 * Clears browser GUI to enable to build a new one
+	 * (when starting or ending an exam)
+	 */
+	public void resetBrowserGUI() {
+		browseGUI = null;
 	}
 }
