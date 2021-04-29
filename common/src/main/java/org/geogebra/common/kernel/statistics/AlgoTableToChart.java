@@ -97,6 +97,9 @@ public class AlgoTableToChart extends AlgoElement {
 		});
 	}
 
+	/**
+	 * sets the default style for the chart
+	 */
 	public void setDefaultStyle() {
 		switch (chartType) {
 		case BarChart:
@@ -120,6 +123,9 @@ public class AlgoTableToChart extends AlgoElement {
 		embedManager.sendCommand(chart, "ShowLabel(chart, false)");
 	}
 
+	/**
+	 * computes and updates the chart
+	 */
 	public void updateChartData() {
 		if (embedManager == null) {
 			return;
