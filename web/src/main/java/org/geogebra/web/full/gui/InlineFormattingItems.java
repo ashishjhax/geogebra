@@ -205,12 +205,15 @@ public class InlineFormattingItems {
 		Consumer<AlgoTableToChart.ChartType> chartCreator = (chartType) -> {
 			int column = ((InlineTableController) inlines.get(0)).getSelectedColumn();
 			AlgoTableToChart algoTableToChart =
-					new AlgoTableToChart(table.getConstruction(), table, chartType, column, true);
+					new AlgoTableToChart(table.getConstruction(), table, chartType, column);
 			GeoElement chart = algoTableToChart.getOutput(0);
 			chart.setLabel(null);
 			app.getUndoManager().storeUndoInfo();
 
-			Scheduler.get().scheduleDeferred(algoTableToChart::compute);
+			Scheduler.get().scheduleDeferred(() -> {
+				algoTableToChart.updateChartData();
+				algoTableToChart.setDefaultStyle();
+			});
 		};
 
 		AriaMenuBar chartSubmenu = new AriaMenuBar();

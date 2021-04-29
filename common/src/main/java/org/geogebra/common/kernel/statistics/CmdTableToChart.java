@@ -30,7 +30,7 @@ public class CmdTableToChart extends CommandProcessor {
 				int column = (int) ((GeoNumeric) args[2]).getValue();
 
 				AlgoTableToChart algoTableToChart =
-						new AlgoTableToChart(cons, table, chartType, column, false);
+						new AlgoTableToChart(cons, table, chartType, column);
 				GeoElement chart = algoTableToChart.getOutput(0);
 				chart.setLabel(command.getLabel());
 				algoTableToChart.compute();
