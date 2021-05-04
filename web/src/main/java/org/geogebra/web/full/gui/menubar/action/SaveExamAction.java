@@ -34,8 +34,7 @@ public class SaveExamAction implements MenuAction<Void> {
 				msg = app.getLocalization().getError("SaveFileFailed");
 			}
 			ToolTipManagerW.sharedInstance().showBottomMessage(
-					app.getLocalization().getMenu(msg),
-					true, app);
+					app.getLocalization().getMenu(msg), app);
 			if (callback != null) {
 				callback.callback(true);
 			}
