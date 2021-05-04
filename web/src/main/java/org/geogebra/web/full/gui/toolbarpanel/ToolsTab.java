@@ -6,6 +6,7 @@ import org.geogebra.common.gui.toolcategorization.ToolCollection;
 import org.geogebra.common.gui.toolcategorization.ToolCollectionFactory;
 import org.geogebra.common.gui.toolcategorization.ToolsetLevel;
 import org.geogebra.common.main.App;
+import org.geogebra.web.html5.gui.FastClickHandler;
 import org.geogebra.web.html5.gui.tooltip.ToolTipManagerW;
 import org.geogebra.web.html5.gui.util.AriaHelper;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
@@ -187,10 +188,6 @@ public class ToolsTab extends ToolbarPanel.ToolbarTab {
 		if (height >= 0) {
 			sp.setHeight(height + "px");
 		}
-		if (app.getWidth() < app.getHeight()) {
-			w = 420;
-		}
-		ToolTipManagerW.sharedInstance().setTooltipWidthOnResize(w, left);
 	}
 
 	/**

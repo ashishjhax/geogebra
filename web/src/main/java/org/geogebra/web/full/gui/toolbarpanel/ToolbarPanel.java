@@ -686,10 +686,12 @@ public class ToolbarPanel extends FlowPanel
 	}
 
 	/**
-	 * @return mode floating action button
+	 * @return true if move FAB is below snackbar, false otherwise
 	 */
-	public StandardButton getMoveBtn() {
-		return moveBtn;
+	public boolean isMoveBelowSnackbar(int snackbarRight) {
+		return moveBtn != null && !moveBtn.getStyleName().contains("hideMoveBtn")
+				&& moveBtn.getAbsoluteLeft() - 8 <=  snackbarRight;
+		//keep the 8px distance between FAB and snackbar
 	}
 
 	@Override
@@ -840,7 +842,7 @@ public class ToolbarPanel extends FlowPanel
 	}
 
 	private void switchTab(TabIds tab, boolean fade) {
-		ToolTipManagerW.hideAllToolTips();
+		ToolTipManagerW.sharedInstance().hideTooltip();
 		navRail.selectTab(tab);
 		open();
 		setFadeTabs(fade);
@@ -871,7 +873,7 @@ public class ToolbarPanel extends FlowPanel
 		if (tabTools != null) {
 			tabTools.setVisible(true);
 		}
-		ToolTipManagerW.hideAllToolTips();
+		ToolTipManagerW.sharedInstance().hideTooltip();
 
 		switchTab(TabIds.TOOLS, fade);
 		dispatchEvent(EventType.TOOLS_PANEL_SELECTED);
