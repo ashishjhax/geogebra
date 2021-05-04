@@ -32,7 +32,7 @@ public class IntervalAsymtotesTest extends BaseUnitTest {
 	public void secCscXInverseCutOff() {
 		IntervalTupleList result = functionValues("1/sec(csc(x))", -2.9, 2.9, -8, 8);
 		List<Integer> cutOffIndexes = Arrays.asList(7, 38, 61, 92);
-		for (int index: cutOffIndexes) {
+		for (int index : cutOffIndexes) {
 			assertFalse(result.get(index).y().isWhole());
 		}
 	}
@@ -64,7 +64,7 @@ public class IntervalAsymtotesTest extends BaseUnitTest {
 		IntervalFunctionSampler sampler =
 				new IntervalFunctionSampler(function, range, 100);
 		IntervalTupleList result = sampler.result();
-		for (IntervalTuple tuple: result) {
+		for (IntervalTuple tuple : result) {
 			assertFalse(tuple.y().isHalfNegativeInfinity());
 		}
 
@@ -94,6 +94,18 @@ public class IntervalAsymtotesTest extends BaseUnitTest {
 	public void squareRootOfTanX() {
 		IntervalTupleList tuples = functionValues("sqrt(tan(x))", 0, 3 * PI, -8, 8);
 		assertEquals(tuples.valueAt(54).getLow(), tuples.valueAt(53).getHigh(), 0);
+	}
+
+	@Test
+	public void inverseOfXPower3() {
+		IntervalTupleList tuples = functionValues("1/x^3", -1.5, 1.5, -4, 4);
+		assertTrue(tuples.valueAt(49).isUndefined());
+	}
+
+	@Test
+	public void inverseOfXPower11() {
+		IntervalTupleList tuples = functionValues("1/x^(11)", -4, 6, -4, 5);
+		assertTrue(tuples.valueAt(39).isUndefined());
 	}
 
 	private IntervalTupleList functionValues(String functionDescription,

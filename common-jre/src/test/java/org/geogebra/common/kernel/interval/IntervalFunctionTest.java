@@ -226,4 +226,12 @@ public class IntervalFunctionTest extends BaseUnitTest {
 		Interval actual = function.evaluate(interval(1.57, 1.58));
 		assertEquals(undefined(), actual);
 	}
+
+	@Test
+	public void evaluateXInverseAtPowerOf11() throws Exception {
+		GeoFunction geo = add("1/(x^11)");
+		IntervalFunction function = new IntervalFunction(geo);
+		Interval actual = function.evaluate(interval(-1.5, 1.5));
+		assertEquals(undefined(), actual);
+	}
 }
