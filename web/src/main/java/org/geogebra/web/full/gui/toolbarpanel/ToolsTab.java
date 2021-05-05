@@ -9,6 +9,7 @@ import org.geogebra.common.main.App;
 import org.geogebra.web.html5.gui.util.AriaHelper;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.CustomScrollbar;
 
 import com.google.gwt.user.client.ui.ScrollPanel;
 
@@ -120,7 +121,7 @@ public class ToolsTab extends ToolbarPanel.ToolbarTab {
 
 	private void createContents() {
 		sp = new ScrollPanel();
-		sp.addStyleName("customScrollbar");
+		CustomScrollbar.apply(sp);
 		sp.setAlwaysShowScrollBars(false);
 		toolsPanel = new Tools((AppW) app, this);
 		sp.add(toolsPanel);
