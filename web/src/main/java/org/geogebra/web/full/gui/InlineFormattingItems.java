@@ -211,8 +211,7 @@ public class InlineFormattingItems {
 			app.getUndoManager().storeUndoInfo();
 
 			Scheduler.get().scheduleDeferred(() -> {
-				algoTableToChart.updateChartData();
-				algoTableToChart.setDefaultStyle();
+				algoTableToChart.updateChartData(true);
 			});
 		};
 

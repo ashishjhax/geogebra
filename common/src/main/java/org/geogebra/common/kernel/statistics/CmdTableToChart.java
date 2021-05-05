@@ -33,7 +33,7 @@ public class CmdTableToChart extends CommandProcessor {
 						new AlgoTableToChart(cons, table, chartType, column);
 				GeoElement chart = algoTableToChart.getOutput(0);
 				chart.setLabel(command.getLabel());
-				algoTableToChart.compute();
+				algoTableToChart.updateChartData(true);
 				return chart.asArray();
 			}
 
