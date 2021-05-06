@@ -26,7 +26,7 @@ public class ClipAlgoSutherlandHodogman {
 	public ArrayList<MyPoint> process(ArrayList<MyPoint> input, double[][] clipPoints) {
 		ArrayList<MyPoint> output = new ArrayList<>(input);
 		for (MyPoint pt: output) {
-			if (Double.isInfinite(pt.y)) {
+			if (Double.isInfinite(pt.y) || Double.isNaN(pt.y)) {
 				pt.y = Math.signum(pt.y) * 1E6;
 			}
 		}
