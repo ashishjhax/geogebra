@@ -831,8 +831,7 @@ public class ColorChooserW extends FlowPanel implements ICustomColor {
 		if (dialog == null) {
 			dialog = new CustomColorDialog(app, this);
 		}
-		dialog.show(this.selectedColor);
-
+		dialog.show(selectedColor != null ? selectedColor : GColor.BLACK);
 		app.setDefaultCursor();
 	}
 
