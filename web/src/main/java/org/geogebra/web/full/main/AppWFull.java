@@ -2146,7 +2146,8 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	public void startExam() {
 		super.startExam();
 		getExam().getTempStorage().clearTempMaterials();
-		getExam().getTempStorage().newMaterial();
+		Material material = getExam().getTempStorage().newMaterial();
+		setActiveMaterial(material);
 		// ensure fullscreen: we may have lost it when handling unsaved
 		// changes
 		getLAF().toggleFullscreen(true);
@@ -2251,7 +2252,8 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 		clearConstruction();
 		restoreMaterial(subAppCode);
 		if (isExam()) {
-			getExam().getTempStorage().newMaterial();
+			Material material = getExam().getTempStorage().newMaterial();
+			setActiveMaterial(material);
 		}
 		resetFullScreenBtn();
 	}
