@@ -15,6 +15,7 @@ import org.geogebra.common.euclidian.draw.HasTextFormat;
 import org.geogebra.common.euclidian.inline.InlineTableController;
 import org.geogebra.common.euclidian.inline.InlineTextController;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoEmbed;
 import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoInlineText;
 import org.geogebra.common.kernel.geos.HasTextFormatter;
@@ -206,12 +207,14 @@ public class InlineFormattingItems {
 			int column = ((InlineTableController) inlines.get(0)).getSelectedColumn();
 			AlgoTableToChart algoTableToChart =
 					new AlgoTableToChart(table.getConstruction(), table, chartType, column);
-			GeoElement chart = algoTableToChart.getOutput(0);
+			final GeoEmbed chart = (GeoEmbed) algoTableToChart.getOutput(0);
 			chart.setLabel(null);
 			app.getUndoManager().storeUndoInfo();
 
 			Scheduler.get().scheduleDeferred(() -> {
+				algoTableToChart.initChart();
 				algoTableToChart.updateChartData(true);
+				app.getEmbedManager().resetUndo(chart);
 			});
 		};
 

@@ -629,6 +629,11 @@ public class EmbedManagerW implements EmbedManager, EventRenderable, ActionExecu
 	}
 
 	@Override
+	public void resetUndo(GeoEmbed chart) {
+		doIfCalcEmbed(chart, CalcEmbedElement::resetUndo);
+	}
+
+	@Override
 	public void setGraphAxis(GeoEmbed chart, int axis, double crossing) {
 		doIfCalcEmbed(chart, element -> element.setGraphAxis(axis, crossing));
 	}

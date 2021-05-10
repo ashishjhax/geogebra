@@ -13,6 +13,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.util.debug.Log;
 
 public class AlgoPieChart extends AlgoElement implements ChartStyleAlgo {
 	private final GeoList data;

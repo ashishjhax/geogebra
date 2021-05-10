@@ -31,6 +31,7 @@ public class CmdTableToChart extends CommandProcessor {
 
 				AlgoTableToChart algoTableToChart =
 						new AlgoTableToChart(cons, table, chartType, column);
+				app.invokeLater(() -> algoTableToChart.initChart());
 				GeoElement chart = algoTableToChart.getOutput(0);
 				chart.setLabel(command.getLabel());
 				algoTableToChart.updateChartData(true);

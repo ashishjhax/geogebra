@@ -5,6 +5,7 @@ import org.geogebra.common.main.settings.EuclidianSettings;
 import org.geogebra.common.main.undo.UndoInfoStoredListener;
 import org.geogebra.common.main.undo.UndoManager;
 import org.geogebra.common.plugin.EventType;
+import org.geogebra.common.util.debug.Log;
 import org.geogebra.web.full.gui.GuiManagerW;
 import org.geogebra.web.full.gui.applet.GeoGebraFrameFull;
 import org.geogebra.web.full.main.EmbedManagerW;
@@ -20,6 +21,8 @@ public class CalcEmbedElement extends EmbedElement {
 
 	private final GeoGebraFrameFull frame;
 	private UndoRedoGlue undoRedoGlue;
+	private int pendingCommands = 0;
+	private boolean resetNeeded;
 
 	/**
 	 * @param widget
@@ -87,7 +90,20 @@ public class CalcEmbedElement extends EmbedElement {
 	}
 
 	public void sendCommand(String cmd) {
-		frame.getApp().getGgbApi().asyncEvalCommand(cmd, null, null);
+		pendingCommands++;
+		Log.error("try "+cmd);
+		frame.getApp().getGgbApi().asyncEvalCommand(cmd, ignore -> {
+			Log.error("success "+cmd);
+			pendingCommands--;
+			resolvePending();
+		}, null);
+	}
+
+	private void resolvePending() {
+		if (pendingCommands == 0 && resetNeeded) {
+			Log.error("reset");
+			frame.getApp().getKernel().initUndoInfo();
+		}
 	}
 
 	/**
@@ -115,6 +131,12 @@ public class CalcEmbedElement extends EmbedElement {
 		evs.setGridType(grid);
 		evs.endBatch();
 		frame.getApp().getKernel().notifyRepaint();
+	}
+
+	public void resetUndo() {
+		Log.error("try reset");
+		resetNeeded = true;
+		resolvePending();
 	}
 
 	private static class UndoRedoGlue implements UndoInfoStoredListener {

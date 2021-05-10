@@ -51,8 +51,16 @@ public class AlgoTableToChart extends AlgoElement {
 		this.embedManager = kernel.getApplication().getEmbedManager();
 
 		setInputOutput();
+		initChartSync();
+	}
 
-		initChart();
+	private void initChartSync() {
+		chart.setAppName("classic");
+		chart.attr("allowStyleBar", "true");
+		chart.attr("perspective", "2");
+		chart.initDefaultPosition(kernel.getApplication().getActiveEuclidianView());
+		chart.setSize(CHART_SIZE, CHART_SIZE);
+		chart.setEmbedId(embedManager.nextID());
 	}
 
 	@Override
@@ -66,35 +74,25 @@ public class AlgoTableToChart extends AlgoElement {
 		setDependencies();
 	}
 
-	private void initChart() {
+	public void initChart() {
 		if (embedManager == null) {
 			return;
 		}
-
-		chart.setAppName("classic");
-		chart.attr("allowStyleBar", "true");
-		chart.attr("perspective", "2");
-		chart.initDefaultPosition(kernel.getApplication().getActiveEuclidianView());
-		chart.setSize(CHART_SIZE, CHART_SIZE);
-		chart.setEmbedId(embedManager.nextID());
-
-		cons.getApplication().invokeLater(() -> {
-			switch (chartType) {
-			case PieChart:
-				embedManager.sendCommand(chart, "ShowAxes(false)");
-				embedManager.sendCommand(chart, "ZoomIn(-4, -4, 4, 4)");
-				break;
-			case LineGraph:
-				embedManager.sendCommand(chart, "ShowAxes(true)");
-				embedManager.setGrid(chart, EuclidianView.GRID_CARTESIAN);
-				break;
-			case BarChart:
-				embedManager.sendCommand(chart, "ShowAxes(true)");
-				break;
-			default:
-				break;
-			}
-		});
+		switch (chartType) {
+		case PieChart:
+			embedManager.sendCommand(chart, "ShowAxes(false)");
+			embedManager.sendCommand(chart, "ZoomIn(-4, -4, 4, 4)");
+			break;
+		case LineGraph:
+			embedManager.sendCommand(chart, "ShowAxes(true)");
+			embedManager.setGrid(chart, EuclidianView.GRID_CARTESIAN);
+			break;
+		case BarChart:
+			embedManager.sendCommand(chart, "ShowAxes(true)");
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**
