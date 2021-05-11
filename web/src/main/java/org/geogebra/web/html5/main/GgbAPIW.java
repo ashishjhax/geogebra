@@ -953,7 +953,7 @@ public class GgbAPIW extends GgbAPI {
 						pdf = evw.getExportPDF(scale);
 					} else {
 						pdf = AnimationExporter.export(kernel.getApplication(), 0,
-								(GeoNumeric) kernel.lookupLabel(sliderLabel), false,
+								(GeoNumeric) kernel.lookupLabel(sliderLabel),
 								filename, scale, Double.NaN, ExportType.PDF_HTML5);
 					}
 				} else {
@@ -978,7 +978,7 @@ public class GgbAPIW extends GgbAPI {
 
 		// each frame as ExportType.PNG
 		AnimationExporter.export(kernel.getApplication(), (int) timeBetweenFrames,
-				(GeoNumeric) kernel.lookupLabel(sliderLabel), isLoop, filename,
+				(GeoNumeric) kernel.lookupLabel(sliderLabel), filename,
 				scale, rotate, ExportType.PNG);
 
 	}
@@ -989,7 +989,7 @@ public class GgbAPIW extends GgbAPI {
 			double rotate) {
 		// each frame as ExportType.WEBP
 		AnimationExporter.export(kernel.getApplication(), (int) timeBetweenFrames,
-				(GeoNumeric) kernel.lookupLabel(sliderLabel), isLoop, filename,
+				(GeoNumeric) kernel.lookupLabel(sliderLabel), filename,
 				scale, rotate, ExportType.WEBP);
 	}
 
