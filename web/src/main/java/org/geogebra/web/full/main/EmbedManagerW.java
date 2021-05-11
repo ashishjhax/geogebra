@@ -633,14 +633,13 @@ public class EmbedManagerW implements EmbedManager, EventRenderable, ActionExecu
 		doIfCalcEmbed(chart, element -> element.setGraphAxis(axis, crossing));
 	}
 
-	@Override
-	public void setGrid(GeoEmbed chart, int grid) {
-		doIfCalcEmbed(chart, element -> element.setGrid(grid));
-	}
-
-	private void doIfCalcEmbed(GeoEmbed chart, Consumer<CalcEmbedElement> consumer) {
+	public void doIfCalcEmbed(GeoEmbed chart, Consumer<CalcEmbedElement> consumer) {
 		DrawableND drawChart = app.getActiveEuclidianView().getDrawableFor(chart);
 		EmbedElement el = widgets.get(drawChart);
+		if (el == null) {
+			el = cache.get(chart.getEmbedID());
+		}
+		Log.debug("here with: " + el);
 		if (el instanceof CalcEmbedElement) {
 			consumer.accept((CalcEmbedElement) el);
 		}

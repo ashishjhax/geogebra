@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.geogebra.common.euclidian.EmbedManager;
-import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.GetCommand;
@@ -50,9 +49,15 @@ public class AlgoTableToChart extends AlgoElement {
 		this.column = column;
 		this.embedManager = kernel.getApplication().getEmbedManager();
 
-		setInputOutput();
+		chart.setAppName("classic");
+		chart.attr("preloadModules", "");
+		chart.attr("allowStyleBar", "true");
+		chart.attr("perspective", "2");
+		chart.initDefaultPosition(kernel.getApplication().getActiveEuclidianView());
+		chart.setSize(CHART_SIZE, CHART_SIZE);
+		chart.setEmbedId(embedManager.nextID());
 
-		initChart();
+		setInputOutput();
 	}
 
 	@Override
@@ -64,63 +69,6 @@ public class AlgoTableToChart extends AlgoElement {
 		};
 		setOnlyOutput(chart);
 		setDependencies();
-	}
-
-	private void initChart() {
-		if (embedManager == null) {
-			return;
-		}
-
-		chart.setAppName("classic");
-		chart.attr("allowStyleBar", "true");
-		chart.attr("perspective", "2");
-		chart.initDefaultPosition(kernel.getApplication().getActiveEuclidianView());
-		chart.setSize(CHART_SIZE, CHART_SIZE);
-		chart.setEmbedId(embedManager.nextID());
-
-		cons.getApplication().invokeLater(() -> {
-			switch (chartType) {
-			case PieChart:
-				embedManager.sendCommand(chart, "ShowAxes(false)");
-				embedManager.sendCommand(chart, "ZoomIn(-4, -4, 4, 4)");
-				break;
-			case LineGraph:
-				embedManager.sendCommand(chart, "ShowAxes(true)");
-				embedManager.setGrid(chart, EuclidianView.GRID_CARTESIAN);
-				break;
-			case BarChart:
-				embedManager.sendCommand(chart, "ShowAxes(true)");
-				break;
-			default:
-				break;
-			}
-		});
-	}
-
-	/**
-	 * sets the default style for the chart
-	 */
-	public void setDefaultStyle() {
-		switch (chartType) {
-		case BarChart:
-			if (kernel.getApplication().isMebis()) {
-				embedManager.sendCommand(chart, "SetColor(chart, \"#B500A8D5\")");
-			} else {
-				embedManager.sendCommand(chart, "SetColor(chart, \"#B56557D2\")");
-			}
-			break;
-		case LineGraph:
-			if (kernel.getApplication().isMebis()) {
-				embedManager.sendCommand(chart, "SetColor(chart, \"#00A8D5\")");
-			} else {
-				embedManager.sendCommand(chart, "SetColor(chart, \"#6557D2\")");
-			}
-			embedManager.sendCommand(chart, "SetLineThickness(chart, 8)");
-			break;
-		default:
-			break;
-		}
-		embedManager.sendCommand(chart, "ShowLabel(chart, false)");
 	}
 
 	/**
@@ -175,8 +123,8 @@ public class AlgoTableToChart extends AlgoElement {
 			String newMinY = "(" + axisDistance + " * " + maxY + " - y(Corner(5)) * "
 					+ minY + ") / (" + axisDistance + " - y(Corner(5)))";
 
-			embedManager.sendCommand(chart, "ZoomIn(" + newMinX + ", " + newMinY
-					+ ", " + maxX + ", " + maxY + ")");
+			//embedManager.sendCommand(chart, "ZoomIn(" + newMinX + ", " + newMinY
+			//		+ ", " + maxX + ", " + maxY + ")");
 			embedManager.setGraphAxis(chart, 0, minY);
 			embedManager.setGraphAxis(chart, 1, minX);
 		}
@@ -184,7 +132,7 @@ public class AlgoTableToChart extends AlgoElement {
 
 	@Override
 	public void compute() {
-		cons.getApplication().invokeLater(this::updateChartData);
+		updateChartData();
 	}
 
 	@Override
