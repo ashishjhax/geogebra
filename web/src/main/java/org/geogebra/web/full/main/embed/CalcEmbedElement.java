@@ -122,7 +122,7 @@ public class CalcEmbedElement extends EmbedElement {
 			} else {
 				chart.setObjColor(GColor.newColorRGB(0x6557D2));
 			}
-			chart.setAlphaValue(181./255);
+			chart.setAlphaValue(181. / 255);
 			break;
 		default:
 			break;
