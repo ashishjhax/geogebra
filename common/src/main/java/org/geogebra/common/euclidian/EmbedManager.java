@@ -157,6 +157,4 @@ public interface EmbedManager {
 	void sendCommand(GeoEmbed chart, String cmd);
 
 	void setGraphAxis(GeoEmbed chart, int axis, double crossing);
-
-	void setGrid(GeoEmbed chart, int grid);
 }
