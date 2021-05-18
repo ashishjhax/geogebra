@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.geogebra.common.euclidian.EmbedManager;
+import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.GetCommand;
@@ -13,6 +14,7 @@ import org.geogebra.common.kernel.geos.GeoEmbed;
 import org.geogebra.common.kernel.geos.GeoInlineTable;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.main.App;
 import org.geogebra.common.util.StringUtil;
 
 public class AlgoTableToChart extends AlgoElement {
@@ -30,6 +32,7 @@ public class AlgoTableToChart extends AlgoElement {
 	private final GeoInlineTable table;
 	private final ChartType chartType;
 	private final int column;
+	private final int embedID;
 
 	private final GeoEmbed chart;
 
@@ -41,12 +44,13 @@ public class AlgoTableToChart extends AlgoElement {
 	 * @param geoInlineTable table
 	 */
 	public AlgoTableToChart(Construction cons, GeoInlineTable geoInlineTable,
-			ChartType chartType, int column) {
+			ChartType chartType, int column, int embedID) {
 		super(cons);
 		this.table = geoInlineTable;
 		this.chart = new GeoEmbed(cons);
 		this.chartType = chartType;
 		this.column = column;
+		this.embedID = embedID;
 		this.embedManager = kernel.getApplication().getEmbedManager();
 
 		chart.setAppName("classic");
@@ -55,7 +59,7 @@ public class AlgoTableToChart extends AlgoElement {
 		chart.attr("perspective", "2");
 		chart.initDefaultPosition(kernel.getApplication().getActiveEuclidianView());
 		chart.setSize(CHART_SIZE, CHART_SIZE);
-		chart.setEmbedId(embedManager.nextID());
+		chart.setEmbedId(embedID);
 
 		setInputOutput();
 	}
@@ -65,7 +69,8 @@ public class AlgoTableToChart extends AlgoElement {
 		input = new GeoElement[]{
 				table,
 				new GeoText(cons, chartType.toString()),
-				new GeoNumeric(cons, column)
+				new GeoNumeric(cons, column),
+				new GeoNumeric(cons, embedID)
 		};
 		setOnlyOutput(chart);
 		setDependencies();
@@ -118,13 +123,13 @@ public class AlgoTableToChart extends AlgoElement {
 
 		if (chartType == ChartType.BarChart || chartType == ChartType.LineGraph) {
 			int axisDistance = 32; // padding between the axis and the edge of the object
-			String newMinX = "(" + axisDistance + " * " + maxX + " - x(Corner(5)) * "
-					+ minX + ") / (" + axisDistance + " - x(Corner(5)))";
-			String newMinY = "(" + axisDistance + " * " + maxY + " - y(Corner(5)) * "
-					+ minY + ") / (" + axisDistance + " - y(Corner(5)))";
-
-			//embedManager.sendCommand(chart, "ZoomIn(" + newMinX + ", " + newMinY
-			//		+ ", " + maxX + ", " + maxY + ")");
+			App app = embedManager.getEmbedApp(chart);
+			EuclidianView ev = app.getActiveEuclidianView();
+			double newXmin = (axisDistance * maxX - ev.getWidth() * minX) / (axisDistance - ev
+					.getWidth());
+			double newYmin = (axisDistance * maxY - ev.getHeight() * minY) / (axisDistance - ev
+					.getHeight());
+			app.getActiveEuclidianView().setRealWorldCoordSystem(newXmin, maxX, newYmin, maxY);
 			embedManager.setGraphAxis(chart, 0, minY);
 			embedManager.setGraphAxis(chart, 1, minX);
 		}

@@ -91,6 +91,11 @@ public class CalcEmbedElement extends EmbedElement {
 		frame.getApp().getGgbApi().setBase64(base64);
 	}
 
+	/**
+	 * set the default style for charts in notes
+	 * @param isMebis whether mebis is running
+	 * @param chartType type of chart (linegraph, barchart, piechart)
+	 */
 	public void initChart(boolean isMebis, AlgoTableToChart.ChartType chartType) {
 		EuclidianView ev = frame.getApp().getActiveEuclidianView();
 		GeoElement chart = frame.getApp().getKernel().lookupLabel("chart");
@@ -113,20 +118,24 @@ public class CalcEmbedElement extends EmbedElement {
 		case BarChart:
 			ev.getSettings().setShowAxes(true);
 			if (isMebis) {
-				chart.setObjColor(GColor.newColorRGB(0xB500A8D5));
+				chart.setObjColor(GColor.newColorRGB(0x00A8D5));
 			} else {
-				chart.setObjColor(GColor.newColorRGB(0xB56557D2));
+				chart.setObjColor(GColor.newColorRGB(0x6557D2));
 			}
+			chart.setAlphaValue(181./255);
 			break;
 		default:
 			break;
 		}
 
 		chart.setLabelVisible(false);
+		chart.updateRepaint();
 		frame.getApp().getKernel().initUndoInfo();
 	}
 
-
+	/**
+	 * @param cmd command
+	 */
 	public void sendCommand(String cmd) {
 		Log.debug(cmd);
 		frame.getApp().getGgbApi().evalCommand(cmd);
@@ -207,5 +216,9 @@ public class CalcEmbedElement extends EmbedElement {
 		private void pruneStateList() {
 			embeddedUndoManager.pruneStateList();
 		}
+	}
+
+	public GeoGebraFrameFull getFrame() {
+		return frame;
 	}
 }

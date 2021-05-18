@@ -211,7 +211,7 @@ public class InlineFormattingItems {
 
 			String command = "TableToChart(" + table.getLabelSimple()
 					+ ", \"" + chartType.toString()
-					+ "\", " + column + ")";
+					+ "\", " + column + ", " + app.getEmbedManager().nextID() + ")";
 
 			((GgbAPIW) app.getGgbApi()).asyncEvalCommandGetLabels(command, (label) -> {
 				GeoEmbed embed = (GeoEmbed) app.getKernel().lookupLabel(label.asT());
