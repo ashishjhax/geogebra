@@ -597,7 +597,7 @@ public class MathFieldW implements MathField, IsWidget, MathFieldAsync, BlurHand
 		ctx.canvas.width = (int) Math.ceil(width * ratio);
 		wasPaintedWithCursor = CursorBox.visible();
 
-		int margin = getMargin(lastIcon);
+		double margin = getMargin(lastIcon);
 
 		paint(ctx, margin);
 		lastIcon.paintCursor(new Graphics2DW(ctx), margin);
@@ -611,7 +611,7 @@ public class MathFieldW implements MathField, IsWidget, MathFieldAsync, BlurHand
 	 * Paints the formula on a canvas
 	 * @param ctx canvas context
 	 */
-	public void paint(CanvasRenderingContext2D ctx, int top) {
+	public void paint(CanvasRenderingContext2D ctx, double top) {
 		JlmLib.draw(lastIcon, ctx, 0, top, new ColorW(foregroundCssColor),
 				new ColorW(backgroundCssColor), null, ratio);
 	}
@@ -625,8 +625,8 @@ public class MathFieldW implements MathField, IsWidget, MathFieldAsync, BlurHand
 	}
 
 	private double computeHeight() {
-		int margin = getMargin(lastIcon);
-		return Math.max(roundUp(lastIcon.getIconHeight() + margin + bottomOffset), minHeight);
+		double margin = getMargin(lastIcon);
+		return Math.max(lastIcon.getIconHeight() + margin + bottomOffset, minHeight);
 	}
 
 	public int getIconHeight() {
@@ -641,11 +641,9 @@ public class MathFieldW implements MathField, IsWidget, MathFieldAsync, BlurHand
 		return lastIcon.getIconDepth();
 	}
 
-	private int getMargin(TeXIcon lastIcon2) {
-		return fixMargin > 0 ? fixMargin : (int) Math.max(0,
-				roundUp(-lastIcon2.getTrueIconHeight()
-						+ lastIcon2.getTrueIconDepth()
-						+ getFontSize()));
+	private double getMargin(TeXIcon lastIcon2) {
+		return fixMargin + Math.max(0, -lastIcon2.getTrueIconHeight()
+				+ lastIcon2.getTrueIconDepth() + getFontSize());
 	}
 
 	private boolean active(Object element) {
