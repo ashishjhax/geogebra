@@ -1597,8 +1597,9 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	private void setPerspectiveForUnbundled(Perspective p) {
 		Perspective fromXml = getTmpPerspective(p);
 
-		Perspective forcedPerspective = PerspectiveDecoder.decode(getConfig().getForcedPerspective(),
-				getKernel().getParser(), ToolBar.getAllToolsNoMacros(true, false, this));
+		Perspective forcedPerspective = PerspectiveDecoder
+				.decode(getConfig().getForcedPerspective(), getKernel().getParser(),
+						ToolBar.getAllToolsNoMacros(true, false, this));
 
 		LayoutW layout = getGuiManager().getLayout();
 
@@ -1619,16 +1620,30 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	}
 
 	private void updateAvVisibility(Perspective forcedPerspective, Perspective fromXml) {
-		DockPanelData[] dockPanelDatas = fromXml.getDockPanelData();
-		DockPanelData oldAlgebra = findDockPanelData(dockPanelDatas, App.VIEW_ALGEBRA);
-		DockPanelData oldEuclidian = findDockPanelData(dockPanelDatas,
+		DockPanelData[] oldDockPanelData = fromXml.getDockPanelData();
+		DockPanelData[] dockPanelData = forcedPerspective.getDockPanelData();
+
+		int oldAlgebra = findDockPanelData(oldDockPanelData, App.VIEW_ALGEBRA);
+		int oldEuclidian = findDockPanelData(oldDockPanelData,
+				isUnbundled3D() ? App.VIEW_EUCLIDIAN3D : App.VIEW_EUCLIDIAN);
+		int euclidian = findDockPanelData(dockPanelData,
 				isUnbundled3D() ? App.VIEW_EUCLIDIAN3D : App.VIEW_EUCLIDIAN);
 
-		if (oldAlgebra != null && oldEuclidian != null) {
-			if (!oldAlgebra.isVisible()) {
-				 forcedPerspective.getSplitPaneData()[0].setDivider(0);
-				//Log.debug(forcedPerspective.getSplitPaneData()[0]);
-			}
+		double algebraWidth = 0;
+		double euclidianWidth = 0;
+		if (oldAlgebra != -1 && oldDockPanelData[oldAlgebra].isVisible()) {
+			algebraWidth = oldDockPanelData[oldAlgebra].getEmbeddedSize();
+		}
+
+		if (oldEuclidian != -1 && oldDockPanelData[oldEuclidian].isVisible()) {
+			euclidianWidth = oldDockPanelData[oldEuclidian].getEmbeddedSize();
+		} else {
+			dockPanelData[euclidian].setVisible(false);
+		}
+
+		if (algebraWidth != 0 || euclidianWidth != 0) {
+			forcedPerspective.getSplitPaneData()[0]
+					.setDivider(algebraWidth / (algebraWidth + euclidianWidth));
 		}
 	}
 
@@ -1637,19 +1652,18 @@ public class AppWFull extends AppW implements HasKeyboard, MenuViewListener {
 	}
 
 	private void setupToolbarPanelVisibility(DockPanelData[] dockPanelData) {
-		DockPanelData oldAlgebra = findDockPanelData(dockPanelData, App.VIEW_ALGEBRA);
-		DockPanelData oldEuclidian = findDockPanelData(dockPanelData,
+		int algebra = findDockPanelData(dockPanelData, App.VIEW_ALGEBRA);
+		int euclidian = findDockPanelData(dockPanelData,
 				isUnbundled3D() ? App.VIEW_EUCLIDIAN3D : App.VIEW_EUCLIDIAN);
 
-		boolean showAlgebraView = oldAlgebra.isVisible();
-		boolean isEvVisible = oldEuclidian.isVisible();
+		boolean isAvVisible = algebra != -1 && dockPanelData[algebra].isVisible();
+		boolean isEvVisible = euclidian != -1 && dockPanelData[euclidian].isVisible();
 
 		ToolbarPanel toolbarPanel = getGuiManager().getUnbundledToolbar();
-		if (!showAlgebraView) {
+		if (!isAvVisible) {
 			toolbarPanel.hideToolbar();
 			toolbarPanel.setLastOpenWidth(ToolbarPanel.OPEN_START_WIDTH_LANDSCAPE);
 		} else if (isEvVisible) {
-			toolbarPanel.close(false);
 			invokeLater(() -> {
 				toolbarPanel.setLastOpenWidth(ToolbarPanel.OPEN_START_WIDTH_LANDSCAPE);
 				toolbarPanel.open();
