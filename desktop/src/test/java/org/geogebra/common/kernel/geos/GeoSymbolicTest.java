@@ -1425,6 +1425,13 @@ public class GeoSymbolicTest extends BaseSymbolicTest {
 	}
 
 	@Test
+	public void testFactorial() {
+		t("(1/2)!", "1 / 2 * sqrt(π)");
+		t("a=1/2", "1 / 2");
+		t("a!", "1 / 2 * sqrt(π)");
+	}
+
+	@Test
 	public void testVariableAfterUndo() {
 		UndoRedoTester undoRedo = new UndoRedoTester(app);
 		undoRedo.setupUndoRedo();
