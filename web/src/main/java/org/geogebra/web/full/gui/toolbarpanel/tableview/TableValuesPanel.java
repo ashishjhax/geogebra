@@ -6,6 +6,7 @@ import org.geogebra.common.gui.view.table.TableValuesModel;
 import org.geogebra.common.gui.view.table.TableValuesView;
 import org.geogebra.common.kernel.kernelND.GeoEvaluatable;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.CustomScrollbar;
 import org.geogebra.web.html5.util.TestHarness;
 
 import com.google.gwt.dom.client.Element;
@@ -52,7 +53,7 @@ public class TableValuesPanel extends FlowPanel
 	private void setStyleForEmpty(boolean empty) {
 		setStyleName("tvTable", !empty);
 		setStyleName("emptyTablePanel", empty);
-		parentTab.setStyleName("customScrollbar", empty);
+		CustomScrollbar.apply(parentTab);
 		addParentClassName("tableViewParent", empty);
 	}
 
@@ -70,13 +71,6 @@ public class TableValuesPanel extends FlowPanel
 			} else {
 				parent.removeClassName(className);
 			}
-		}
-	}
-
-	private void removeParentClassName(String className) {
-		Element parent = getElement().getParentElement();
-		if (parent != null) {
-			parent.removeClassName(className);
 		}
 	}
 

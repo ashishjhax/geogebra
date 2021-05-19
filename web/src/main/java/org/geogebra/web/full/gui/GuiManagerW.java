@@ -91,7 +91,6 @@ import org.geogebra.web.full.gui.toolbar.ToolBarW;
 import org.geogebra.web.full.gui.toolbarpanel.MenuToggleButton;
 import org.geogebra.web.full.gui.toolbarpanel.ShowableTab;
 import org.geogebra.web.full.gui.toolbarpanel.ToolbarPanel;
-import org.geogebra.web.full.gui.util.PopupBlockAvoider;
 import org.geogebra.web.full.gui.util.ScriptArea;
 import org.geogebra.web.full.gui.view.algebra.AlgebraControllerW;
 import org.geogebra.web.full.gui.view.algebra.AlgebraViewW;
@@ -133,7 +132,6 @@ import org.geogebra.web.shared.GlobalHeader;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -648,14 +646,9 @@ public class GuiManagerW extends GuiManager
 		getApp().recalculateEnvironments();
 		getApp().setPreferredSize(
 				AwtFactory.getPrototype().newDimension(width, height));
-		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
-
-			@Override
-			public void execute() {
-				getApp().centerAndResizeViews();
-				getApp().getKeyboardManager().resizeKeyboard();
-			}
-
+		Scheduler.get().scheduleDeferred(() -> {
+			getApp().centerAndResizeViews();
+			getApp().getKeyboardManager().resizeKeyboard();
 		});
 	}
 
@@ -683,22 +676,11 @@ public class GuiManagerW extends GuiManager
 	}
 
 	@Override
-	public boolean moveMoveFloatingButtonUp(int left, int width,
-			boolean isSmall) {
+	public int getMoveTopBelowSnackbar(int snackbarRight) {
 		if (getUnbundledToolbar() != null) {
-			return getUnbundledToolbar()
-					.moveMoveFloatingButtonUpWithTooltip(left,
-					width, isSmall);
+			return getUnbundledToolbar().getMoveTopBelowSnackbar(snackbarRight);
 		}
-		return false;
-	}
-
-	@Override
-	public void moveMoveFloatingButtonDown(boolean isSmall, boolean wasMoved) {
-		if (getUnbundledToolbar() != null) {
-			getUnbundledToolbar().moveMoveFloatingButtonDownWithTooltip(isSmall,
-				wasMoved);
-		}
+		return 0;
 	}
 
 	@Override
@@ -1301,12 +1283,6 @@ public class GuiManagerW extends GuiManager
 		if (spreadsheetView != null) {
 			spreadsheetView.setScrollToShow(b);
 		}
-	}
-
-	@Override
-	public void showURLinBrowser(final String strURL) {
-		final PopupBlockAvoider popupBlockAvoider = new PopupBlockAvoider();
-		popupBlockAvoider.openURL(strURL);
 	}
 
 	@Override

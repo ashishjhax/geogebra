@@ -30,7 +30,6 @@ import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
 import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.layout.Perspective;
 import org.geogebra.common.javax.swing.GImageIcon;
-import org.geogebra.common.javax.swing.GOptionPane;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.GeoFactory;
 import org.geogebra.common.kernel.Kernel;
@@ -148,14 +147,13 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.TextAreaElement;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import elemental2.core.ArrayBuffer;
@@ -200,7 +198,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	private CopyPasteW copyPaste;
 
 	protected MaterialsManagerI fm;
-	private Material activeMaterial;
 
 	protected final GeoGebraElement geoGebraElement;
 	protected final AppletParameters appletParameters;
@@ -250,13 +247,10 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		}
 	};
 
-	Scheduler.ScheduledCommand sucCallback = new Scheduler.ScheduledCommand() {
-		@Override
-		public void execute() {
-			// 0.5 seconds is good for the user and maybe for the computer
-			// too
-			timeruc.schedule(500);
-		}
+	Scheduler.ScheduledCommand sucCallback = () -> {
+		// 0.5 seconds is good for the user and maybe for the computer
+		// too
+		timeruc.schedule(500);
 	};
 
 	/**
@@ -298,13 +292,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 				.empty(getAppletParameters().getParamScaleContainerClass())) {
 			Browser.addMutationObserver(getParent(
 					getAppletParameters().getParamScaleContainerClass()),
-					new AsyncOperation<String>() {
-
-						@Override
-						public void callback(String obj) {
-							checkScaleContainer();
-						}
-					});
+					obj -> checkScaleContainer());
 		}
 	}
 
@@ -1020,7 +1008,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		clearMedia();
 		resetUniqueId();
 		setLocalID(-1);
-		resetActiveMaterial();
+		setActiveMaterial(null);
 
 		if (getGoogleDriveOperation() != null) {
 			getGoogleDriveOperation().resetStorageInfo();
@@ -1029,7 +1017,8 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		resetUI();
 		resetUrl();
 		if (isExam()) {
-			getExam().getTempStorage().newMaterial();
+			Material material = getExam().getTempStorage().newMaterial();
+			setActiveMaterial(material);
 		}
 	}
 
@@ -1826,25 +1815,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		return !getAppletParameters().getDataParamApp();
 	}
 
-	/**
-	 * @return active material
-	 */
-	public @CheckForNull Material getActiveMaterial() {
-		return this.activeMaterial;
-	}
-
-	/**
-	 * @param mat
-	 *            active material
-	 */
-	public void setActiveMaterial(Material mat) {
-		this.activeMaterial = mat;
-	}
-
-	private void resetActiveMaterial() {
-		this.activeMaterial = null;
-	}
-
 	@Override
 	protected EuclidianView newEuclidianView(boolean[] showEvAxes,
 			boolean showEvGrid) {
@@ -2199,7 +2169,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	@Override
 	public void closePopups() {
 		closePopupsNoTooltips();
-		ToolTipManagerW.hideAllToolTips();
+		ToolTipManagerW.sharedInstance().hideTooltip();
 
 		if (!isUnbundled() && getGuiManager() != null
 				&& getGuiManager().hasAlgebraView()) {
@@ -2210,7 +2180,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 			getActiveEuclidianView().getEuclidianController()
 					.setObjectMenuActive(false);
 		}
-		//hideSymbolicEditors();
 	}
 
 	/**
@@ -2380,11 +2349,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	}
 
 	@Override
-	public void uploadToGeoGebraTube() {
-		// no upload without UI
-	}
-
-	@Override
 	public void updateApplicationLayout() {
 		Log.debug("updateApplicationLayout: Implementation needed...");
 	}
@@ -2455,41 +2419,6 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		String translatedError = getLocalization().getError(key);
 
 		showErrorDialog(translatedError + ":\n" + error);
-	}
-
-	/**
-	 * Show message in a popup
-	 *
-	 * @param message
-	 *            message
-	 * @param title
-	 *            popup title
-	 */
-	public void showMessage(final String message, final String title) {
-		getOptionPane().showConfirmDialog(message, title,
-				GOptionPane.DEFAULT_OPTION, GOptionPane.INFORMATION_MESSAGE,
-				null);
-	}
-
-	/**
-	 * @param content
-	 *            content
-	 * @param title
-	 *            popup title
-	 * @param buttonText
-	 *            button text
-	 * @param handler
-	 *            button click handler
-	 *
-	 */
-	public void showMessage(final HTML content, final String title,
-			String buttonText, AsyncOperation<String[]> handler) {
-		content.addStyleName("examContent");
-		ScrollPanel scrollPanel = new ScrollPanel(content);
-		scrollPanel.addStyleName("examScrollPanel");
-		getOptionPane().showConfirmDialog(scrollPanel, title,
-				GOptionPane.DEFAULT_OPTION, GOptionPane.INFORMATION_MESSAGE,
-				buttonText, null, handler);
 	}
 
 	@Override
@@ -3192,7 +3121,7 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 		});
 	}
 
-	public static native Element getHiddenTextArea() /*-{
+	public static native TextAreaElement getHiddenTextArea() /*-{
 		var hiddenTextArea = $doc.getElementById('hiddenCopyPasteTextArea');
 		if (!hiddenTextArea) {
 			hiddenTextArea = $doc.createElement("textarea");
@@ -3263,6 +3192,20 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 	 */
 	public boolean isUnbundled3D() {
 		return "3d".equals(getSubAppCode());
+	}
+
+	/**
+	 * @return whether we are running suite
+	 */
+	public boolean isSuite() {
+		return "suite".equals(getConfig().getAppCode());
+	}
+
+	/**
+	 * @return whether we are running cas
+	 */
+	public boolean isUnbundledCas() {
+		return "cas".equals(getSubAppCode());
 	}
 
 	/**
@@ -3361,12 +3304,12 @@ public abstract class AppW extends App implements SetLabels, HasLanguage {
 
 	@Override
 	public void copyImageToClipboard(String dataURI) {
-		if (!Clipboard.isCopyImageToClipboardAvailable()) {
+		if (!ClipboardUtil.isCopyImageToClipboardAvailable()) {
 			Log.debug("window.copyGraphicsToClipboard() not available");
 			return;
 		}
 		try {
-			Clipboard.copyGraphicsToClipboard(dataURI);
+			ClipboardUtil.copyGraphicsToClipboard(dataURI);
 		} catch (Exception e) {
 			Log.warn("Clipboard API is new and maybe half-implemented in your browser.");
 		}

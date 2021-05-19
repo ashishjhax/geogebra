@@ -164,10 +164,6 @@ public class DefaultExportedApi implements ExportedApi {
 		ggbAPI.initCAS();
 	}
 
-	public void uploadToGeoGebraTube() {
-		ggbAPI.uploadToGeoGebraTube();
-	}
-
 	public void setErrorDialogsActive(Object flag) {
 		ggbAPI.setErrorDialogsActive(Js.isTruthy(flag));
 	}
@@ -411,8 +407,12 @@ public class DefaultExportedApi implements ExportedApi {
 		return ggbAPI.getVersion();
 	}
 
-	public void getScreenshotBase64(StringConsumer callback) {
-		ggbAPI.getScreenshotBase64(callback);
+	public void getScreenshotBase64(StringConsumer callback, Object scaleObject) {
+		double scale = 1;
+		if (Js.isTruthy(scaleObject)) {
+			scale = Js.asDouble(scaleObject);
+		}
+		ggbAPI.getScreenshotBase64(callback, scale);
 	}
 
 	public String getThumbnailBase64() {

@@ -6,10 +6,10 @@ import org.geogebra.common.gui.toolcategorization.ToolCollection;
 import org.geogebra.common.gui.toolcategorization.ToolCollectionFactory;
 import org.geogebra.common.gui.toolcategorization.ToolsetLevel;
 import org.geogebra.common.main.App;
-import org.geogebra.web.html5.gui.tooltip.ToolTipManagerW;
 import org.geogebra.web.html5.gui.util.AriaHelper;
 import org.geogebra.web.html5.gui.view.button.StandardButton;
 import org.geogebra.web.html5.main.AppW;
+import org.geogebra.web.html5.util.CustomScrollbar;
 
 import com.google.gwt.user.client.ui.ScrollPanel;
 
@@ -121,7 +121,7 @@ public class ToolsTab extends ToolbarPanel.ToolbarTab {
 
 	private void createContents() {
 		sp = new ScrollPanel();
-		sp.addStyleName("customScrollbar");
+		CustomScrollbar.apply(sp);
 		sp.setAlwaysShowScrollBars(false);
 		toolsPanel = new Tools((AppW) app, this);
 		sp.add(toolsPanel);
@@ -177,7 +177,6 @@ public class ToolsTab extends ToolbarPanel.ToolbarTab {
 	public void onResize() {
 		super.onResize();
 		int w = this.toolbarPanel.getTabWidth();
-		int left = toolbarPanel.getNavigationRailWidth();
 		if (w < 0) {
 			return;
 		}
@@ -187,10 +186,6 @@ public class ToolsTab extends ToolbarPanel.ToolbarTab {
 		if (height >= 0) {
 			sp.setHeight(height + "px");
 		}
-		if (app.getWidth() < app.getHeight()) {
-			w = 420;
-		}
-		ToolTipManagerW.sharedInstance().setTooltipWidthOnResize(w, left);
 	}
 
 	/**

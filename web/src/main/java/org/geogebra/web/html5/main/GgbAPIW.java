@@ -180,11 +180,19 @@ public class GgbAPIW extends GgbAPI {
 
 		EuclidianViewWInterface ev = ((EuclidianViewWInterface) app
 				.getActiveEuclidianView());
+		if (app.getGuiManager() != null) {
+			app.getGuiManager().getLayout().getDockManager().ensureFocus();
+
+			if (app.getGuiManager().getLayout().getDockManager()
+					.getFocusedViewId() == App.VIEW_PROBABILITY_CALCULATOR) {
+				ev = (EuclidianViewWInterface) app.getGuiManager()
+						.getPlotPanelEuclidanView();
+			}
+		}
 
 		// get export image
 		// DPI ignored
-		url = ((EuclidianViewWInterface) app.getActiveEuclidianView())
-				.getExportImageDataUrl(exportScale, transparent, greyscale);
+		url = ev.getExportImageDataUrl(exportScale, transparent, greyscale);
 
 		if (MyDouble.isFinite(dpi) && dpi > 0 && ev instanceof EuclidianViewW) {
 
@@ -210,27 +218,11 @@ public class GgbAPIW extends GgbAPI {
 	@Override
 	public String getPNGBase64(double exportScale, boolean transparent,
 			double dpi, boolean copyToClipboard, boolean greyscale) {
-		if (app.getGuiManager() != null) {
-			app.getGuiManager().getLayout().getDockManager().ensureFocus();
-
-			if (app.getGuiManager().getLayout().getDockManager()
-					.getFocusedViewId() == App.VIEW_PROBABILITY_CALCULATOR) {
-				return pngBase64(((EuclidianViewWInterface) app.getGuiManager()
-						.getPlotPanelEuclidanView()).getExportImageDataUrl(
-								exportScale, transparent, greyscale));
-			}
-		}
-		String ret = pngBase64(getPNG(exportScale, transparent, dpi, greyscale));
-
+		String dataUri = getPNG(exportScale, transparent, dpi, greyscale);
 		if (copyToClipboard) {
-			app.copyImageToClipboard(StringUtil.pngMarker + ret);
+			app.copyImageToClipboard(dataUri);
 		}
-
-		return ret;
-	}
-
-	private static String pngBase64(String pngURL) {
-		return pngURL.substring(StringUtil.pngMarker.length());
+		return StringUtil.removePngMarker(dataUri);
 	}
 
 	/**
@@ -256,7 +248,7 @@ public class GgbAPIW extends GgbAPI {
 					: geo.toString(StringTemplate.latexTemplate);
 		}
 		DrawEquationW.paintOnCanvasOutput(geo, str, c, app.getFontSizeWeb());
-		return c.toDataUrl().substring(StringUtil.pngMarker.length());
+		return StringUtil.removePngMarker(c.toDataUrl());
 	}
 
 	/**
@@ -482,9 +474,8 @@ public class GgbAPIW extends GgbAPI {
 	 * @return base64 encoded thumbnail
 	 */
 	public String getThumbnailBase64() {
-		return ((EuclidianViewWInterface) getViewForThumbnail())
-				.getCanvasBase64WithTypeString()
-				.substring(StringUtil.pngMarker.length());
+		return StringUtil.removePngMarker(((EuclidianViewWInterface) getViewForThumbnail())
+				.getCanvasBase64WithTypeString());
 	}
 
 	/**
@@ -718,7 +709,6 @@ public class GgbAPIW extends GgbAPI {
 
 	/**
 	 * @param show
-	 * 
 	 *            whether show the algebrainput in geogebra-web applets or not
 	 */
 	public void showAlgebraInput(boolean show) {
@@ -806,8 +796,7 @@ public class GgbAPIW extends GgbAPI {
 
 	@Override
 	public void showTooltip(String tooltip) {
-		ToolTipManagerW.sharedInstance().showBottomMessage(tooltip, false,
-				(AppW) app);
+		ToolTipManagerW.sharedInstance().showBottomMessage(tooltip, (AppW) app);
 	}
 
 	/**
@@ -908,8 +897,8 @@ public class GgbAPIW extends GgbAPI {
 	 * @param callback
 	 *            callback
 	 */
-	public void getScreenshotBase64(StringConsumer callback) {
-		((AppW) app).getAppletFrame().getScreenshotBase64(callback);
+	public void getScreenshotBase64(StringConsumer callback, double scale) {
+		((AppW) app).getAppletFrame().getScreenshotBase64(callback, scale);
 	}
 
 	@Override
@@ -954,7 +943,7 @@ public class GgbAPIW extends GgbAPI {
 						pdf = evw.getExportPDF(scale);
 					} else {
 						pdf = AnimationExporter.export(kernel.getApplication(), 0,
-								(GeoNumeric) kernel.lookupLabel(sliderLabel), false,
+								(GeoNumeric) kernel.lookupLabel(sliderLabel),
 								filename, scale, Double.NaN, ExportType.PDF_HTML5);
 					}
 				} else {
@@ -979,7 +968,7 @@ public class GgbAPIW extends GgbAPI {
 
 		// each frame as ExportType.PNG
 		AnimationExporter.export(kernel.getApplication(), (int) timeBetweenFrames,
-				(GeoNumeric) kernel.lookupLabel(sliderLabel), isLoop, filename,
+				(GeoNumeric) kernel.lookupLabel(sliderLabel), filename,
 				scale, rotate, ExportType.PNG);
 
 	}
@@ -990,7 +979,7 @@ public class GgbAPIW extends GgbAPI {
 			double rotate) {
 		// each frame as ExportType.WEBP
 		AnimationExporter.export(kernel.getApplication(), (int) timeBetweenFrames,
-				(GeoNumeric) kernel.lookupLabel(sliderLabel), isLoop, filename,
+				(GeoNumeric) kernel.lookupLabel(sliderLabel), filename,
 				scale, rotate, ExportType.WEBP);
 	}
 

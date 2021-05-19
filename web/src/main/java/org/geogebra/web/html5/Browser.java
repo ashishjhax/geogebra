@@ -94,7 +94,11 @@ public class Browser {
 	}
 
 	public static boolean hasGlobal(String propertyName) {
-		return Js.isTruthy(Js.asPropertyMap(DomGlobal.window).get(propertyName));
+		return hasProperty(DomGlobal.window, propertyName);
+	}
+
+	public static boolean hasProperty(Object base, String propertyName) {
+		return base != null && Js.isTruthy(Js.asPropertyMap(base).get(propertyName));
 	}
 
 	public static boolean supportsPointerEvents() {
@@ -222,6 +226,11 @@ public class Browser {
 	 */
 	public static void scale(Element parent, double externalScale, int x, int y) {
 		if (externalScale < 0 || parent == null) {
+			return;
+		}
+
+		if (isSafariByVendor()) {
+			zoom(parent, externalScale);
 			return;
 		}
 

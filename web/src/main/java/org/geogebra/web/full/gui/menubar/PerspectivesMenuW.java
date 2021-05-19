@@ -45,14 +45,12 @@ public class PerspectivesMenuW extends Submenu {
 
 		if (!app.isExam()) {
 			if (app.getLAF().examSupported()) {
-
 				addItem(MainMenu.getMenuBarHtmlClassic(
 						GuiResources.INSTANCE.menu_icon_exam24().getSafeUri()
 								.asString(),
 						app.getLocalization().getMenu("exam_menu_entry")), // "Exam
 																					// Mode"
 						true, new MenuCommand(app) {
-
 							@Override
 							public void doExecute() {
 								app.getSaveController().showDialogIfNeeded(getExamCallback(), true);
@@ -77,7 +75,7 @@ public class PerspectivesMenuW extends Submenu {
 					public void doExecute() {
 						setPerspective(app, index);
 						if (!(app.isExam() && app.getExam().getStart() >= 0)) {
-							((AppWFull) app).showStartTooltip(defID);
+							app.showStartTooltip(defID);
 						}
 					}
 				});
@@ -88,14 +86,9 @@ public class PerspectivesMenuW extends Submenu {
 	 *         (goes fullscreen)
 	 */
 	AsyncOperation<Boolean> getExamCallback() {
-		return new AsyncOperation<Boolean>() {
-
-			@Override
-			public void callback(Boolean active) {
-				app.getLAF().toggleFullscreen(true);
-				app.setNewExam();
-				((AppWFull) app).examWelcome();
-			}
+		return active -> {
+			app.setNewExam();
+			app.examWelcome();
 		};
 	}
 
