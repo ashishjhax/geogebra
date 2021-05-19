@@ -451,7 +451,7 @@ class NavigationRail extends FlowPanel {
 			getElement().getStyle().clearWidth();
 			toolbarPanel.updateUndoRedoPosition();
 		} else {
-			toolbarPanel.onOpen();
+			toolbarPanel.resizeTabs();
 		}
 		toolbarPanel.onResize();
 

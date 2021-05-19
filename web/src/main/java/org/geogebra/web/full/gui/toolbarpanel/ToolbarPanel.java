@@ -831,7 +831,7 @@ public class ToolbarPanel extends FlowPanel
 	private void switchTab(TabIds tab, boolean fade) {
 		ToolTipManagerW.sharedInstance().hideTooltip();
 		navRail.selectTab(tab);
-		open();
+		openNoResize();
 		setFadeTabs(fade);
 		app.invokeLater(() -> {
 			tabAlgebra.setActive(tab == TabIds.ALGEBRA);
@@ -841,6 +841,7 @@ public class ToolbarPanel extends FlowPanel
 			if (tabTable != null) {
 				tabTable.setActive(tab == TabIds.TABLE);
 			}
+			resizeTabs();
 		});
 		updateMoveButton();
 		if (tab != TabIds.TOOLS) {
@@ -900,18 +901,15 @@ public class ToolbarPanel extends FlowPanel
 	 * Opens the toolbar, sends event through the EventDispatcher.
 	 */
 	public void open() {
+		openNoResize();
+		resizeTabs();
+	}
+
+	private void openNoResize() {
 		if (!isOpen()) {
 			doOpen();
 			dispatchEvent(EventType.SIDE_PANEL_OPENED);
 		}
-		onOpen();
-	}
-
-	/**
-	 * Called after open.
-	 */
-	protected void onOpen() {
-		resizeTabs();
 	}
 
 	/**
