@@ -652,15 +652,15 @@ public abstract class Layout implements SettingListener {
 	 *            view id
 	 * @return dock panel data index in array
 	 */
-	public static DockPanelData findDockPanelData(DockPanelData[] dockPanelData, int viewId) {
+	public static int findDockPanelData(DockPanelData[] dockPanelData, int viewId) {
 		if (dockPanelData == null) {
-			return null;
+			return -1;
 		}
-		for (DockPanelData dockPanelDatum : dockPanelData) {
-			if (dockPanelDatum.getViewId() == viewId) {
-				return dockPanelDatum;
+		for (int i = 0; i < dockPanelData.length; i++) {
+			if (dockPanelData[i].getViewId() == viewId) {
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 }
