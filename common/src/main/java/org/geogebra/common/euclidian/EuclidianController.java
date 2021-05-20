@@ -7750,14 +7750,17 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			break;
 
 		case MOVE_X_AXIS:
+			disableLiveFeedback();
 			scaleXAxis(repaint);
 			break;
 
 		case MOVE_Y_AXIS:
+			disableLiveFeedback();
 			scaleYAxis(repaint);
 			break;
 
 		case MOVE_Z_AXIS:
+			disableLiveFeedback();
 			scaleZAxis(repaint);
 			break;
 
@@ -7765,6 +7768,10 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		}
 
 		kernel.notifyRepaint();
+	}
+
+	private void disableLiveFeedback() {
+		view.getCoordSystemInfo().setInteractive(true);
 	}
 
 	private void handleResizeMultiple(AbstractEvent event,
