@@ -2,10 +2,12 @@ package org.geogebra.web.full.gui.view.spreadsheet;
 
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GRectangle;
+import org.geogebra.web.html5.euclidian.MouseTouchGestureControllerW;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.user.client.ui.AbstractNativeScrollbar;
@@ -20,6 +22,8 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 	private SpreadsheetColumnHeaderW columnHeader;
 	GRectangle contentRect;
 	boolean doAdjustScroll = true;
+	int scrollDirectionX;
+	int scrollDirectionY;
 
 	/**
 	 * @param table
@@ -38,6 +42,16 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 		this.columnHeader = columnHeader;
 
 		addScrollHandler(this);
+		addDomHandler(this::updateScollDirection, MouseWheelEvent.getType());
+	}
+
+	private void updateScollDirection(MouseWheelEvent event) {
+		resetScrollDirection();
+		if (event.getNativeEvent().getShiftKey()) {
+			scrollDirectionX = (int) MouseTouchGestureControllerW.getNativeDelta(event);
+		} else {
+			scrollDirectionY = (int) MouseTouchGestureControllerW.getNativeDelta(event);
+		}
 	}
 
 	/**
@@ -105,15 +119,8 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 	 */
 	public void scrollRectToVisible(GRectangle contentRect1) {
 		this.contentRect = contentRect1;
-		Scheduler.get().scheduleDeferred(scrollRectCommand);
+		Scheduler.get().scheduleDeferred(this::scrollRectToVisibleCommand);
 	}
-
-	Scheduler.ScheduledCommand scrollRectCommand = new Scheduler.ScheduledCommand() {
-		@Override
-		public void execute() {
-			scrollRectToVisibleCommand();
-		}
-	};
 
 	/**
 	 * Scrolls the view so that <code>Rectangle</code> within the view becomes
@@ -185,6 +192,7 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 
 			if (viewPosition.x != startX || viewPosition.y != startY) {
 				doAdjustScroll = false;
+				resetScrollDirection();
 				setViewPosition(viewPosition);
 			}
 		}
@@ -231,7 +239,8 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 		}
 
 		// get new pixel coordinates to place the upper left cell exactly
-		GPoint p2 = table.getPixel(p.x, p.y, true);
+		GPoint p2 = table.getPixel(scrollDirectionX > 0 ? p.x + 1 : p.x,
+				scrollDirectionY > 0 ? p.y + 1 : p.y, true);
 		if (p2 == null) {
 			return;
 		}
@@ -243,9 +252,14 @@ public class TableScroller extends ScrollPanel implements ScrollHandler {
 		// + p.y + "  scroll2: " + newScrollH + " , " + newScrollV);
 
 		doAdjustScroll = false;
+		resetScrollDirection();
 		setHorizontalScrollPosition(newScrollH);
 		setVerticalScrollPosition(newScrollV);
 		doAdjustScroll = true;
+	}
+
+	private void resetScrollDirection() {
+		scrollDirectionX = scrollDirectionY = 0;
 	}
 
 	@Override
