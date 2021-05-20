@@ -15,6 +15,7 @@ public class FileViewCommon extends MyHeaderPanel {
 
 	private AppW app;
 	private final String title;
+	private String materialPanelStyle;
 	// header
 	private HeaderView headerView;
 
@@ -27,14 +28,15 @@ public class FileViewCommon extends MyHeaderPanel {
 	private final LocalizationW loc;
 
 	/**
-	 *
-	 * @param app the application
+	 *  @param app the application
 	 * @param title the header title key.
+	 * @param materialPanelStyle style to add to MmaterialPanel
 	 */
-	public FileViewCommon(AppW app, String title) {
+	public FileViewCommon(AppW app, String title, String materialPanelStyle) {
 		loc = app.getLocalization();
 		this.app = app;
 		this.title = title;
+		this.materialPanelStyle = materialPanelStyle;
 		initGUI();
 	}
 
@@ -48,7 +50,7 @@ public class FileViewCommon extends MyHeaderPanel {
 
 	private void initMaterialPanel() {
 		materialPanel = new FlowPanel();
-		materialPanel.addStyleName("temporaryMaterialPanel");
+		materialPanel.addStyleName(materialPanelStyle);
 	}
 
 	private void initHeader() {

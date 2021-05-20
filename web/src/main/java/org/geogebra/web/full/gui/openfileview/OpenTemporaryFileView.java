@@ -28,7 +28,7 @@ public class OpenTemporaryFileView extends HeaderFileView implements
 	public OpenTemporaryFileView(AppW app) {
 		this.app = app;
 		app.registerOpenFileListener(this);
-		common = new FileViewCommon(app, "Open");
+		common = new FileViewCommon(app, "Open", "temporaryMaterialPanel");
 		tempStorage = app.getExam().getTempStorage();
 	}
 
